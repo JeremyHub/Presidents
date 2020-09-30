@@ -11,39 +11,34 @@ def nextPlayer(players, currentPlayer):
         return players[0]
 
 class presRound(object):
-    def __init__(self, players, startingPlayer, print):
+    def __init__(self, players, startingPlayer):
         self.players = players
         self.currentPlayer = startingPlayer
         self.currentCards = []
         self.prevCards = []
         self.passCounter = 0
-        self.print = print
 
     def nextPlayerStart(self):
         self.currentPlayer = nextPlayer(self.players, self.currentPlayer)
         self.currentCards = self.currentPlayer.start()
         self.prevCards = []
-        if print:
-            print(self.currentPlayer.name, "started with ", self.currentCards)
+        # print(self.currentPlayer.name, "started with ", self.currentCards)
 
     def nextPlayerPlay(self):
         self.prevCards = self.currentCards
         self.currentPlayer = nextPlayer(self.players, self.currentPlayer)
         self.currentCards = self.currentPlayer.play(self.prevCards)
-        if print:
-            print(self.currentPlayer.name, "played ", self.currentCards)
+        # print(self.currentPlayer.name, "played ", self.currentCards)
 
     def currentPlayerStart(self):
         self.currentCards = self.currentPlayer.start()
         self.prevCards = []
-        if print:
-            print(self.currentPlayer.name, "started with ", self.currentCards)
+        # print(self.currentPlayer.name, "started with ", self.currentCards)
 
     def currentPlayerPlay(self):
         self.prevCards = self.currentCards
         self.currentCards = self.currentPlayer.play(self.prevCards)
-        if print:
-            print(self.currentPlayer.name, "played ", self.currentCards)
+        # print(self.currentPlayer.name, "played ", self.currentCards)
 
     def startRound(self):
         # sets up some variables
@@ -62,8 +57,7 @@ class presRound(object):
                 self.passCounter += 1
                 # if everyone has passed
                 if self.passCounter == len(self.players) - 1:
-                    if print:
-                        print("everyone passed")
+                    # print("everyone passed")
                     self.nextPlayerStart()
                     continue
                 # if not everyone has passed
@@ -74,15 +68,13 @@ class presRound(object):
 
             # if a match happened or a two was played
             elif self.currentCards == self.prevCards or self.currentCards[0] == 2:
-                if print:
-                    print('match or two')
+                # print('match or two')
                 self.currentPlayerStart()
                 continue
 
             # if the player is out
             elif self.currentCards[0] == 'out':
-                if print:
-                    print(self.currentPlayer.name, " went out -------------------------------")
+                # print(self.currentPlayer.name, " went out -------------------------------")
                 # puts them on the list
                 playersOutOrder.append(self.currentPlayer)
                 playerToBeRemoved = self.currentPlayer
@@ -105,9 +97,8 @@ class presRound(object):
                 # if they didn't then next person plays (already swapped person)
                 # if everyone has passed (bc amount of people just changed)
                 elif self.passCounter == len(self.players) - 1:
-                    if print:
-                        print("everyone passed")
-                    self.nextPlayerStart()
+                    # print("everyone passed")
+                    self.currentPlayerStart()
                     continue
                 # if not everyone passed then next person plays
                 else:
@@ -117,8 +108,7 @@ class presRound(object):
 
             # if it gets to here then they just played something not special
             else:
-                if print:
-                    print("nothing extraordinary happened")
+                # print("nothing extraordinary happened")
                 self.passCounter = 0
                 self.nextPlayerPlay()
 

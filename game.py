@@ -1,12 +1,14 @@
 from players import *
 from decks_and_cards import *
 from presRound import *
+from badPlayer import *
+from randomPlayer import *
 import math
 import random
 
 
 class Game(object):
-    def __init__(self, numberOfPlayers, name, numRounds, print):
+    def __init__(self, numberOfPlayers, name, numRounds):
         self.name = name
         self.deck = False
         self.players = []
@@ -16,10 +18,10 @@ class Game(object):
         self.playersOutOrder = []
         self.startingPlayer = False
         # makes players
-        for i in range(self.numberOfPlayers):
+        for i in range(self.numberOfPlayers - 1):
             self.players.append(Player(i))
+        self.players.append(RandomPlayer(self.numberOfPlayers))
         self.dealHands()
-        self.print = print
 
     def dealHands(self):
         # makes and shuffles new deck
@@ -37,7 +39,7 @@ class Game(object):
             for card in player.showHand():
                 if card.value == 4 and card.suit == 'Clubs':
                     self.startingPlayer = player
-                    print('starting player:', self.startingPlayer.name)
+                    # print('starting player:', self.startingPlayer.name)
                     break
 
         # heuristic stuff
@@ -45,6 +47,7 @@ class Game(object):
         numberofTimesPresStayed = 0
         numberofTimesVPStayed = 0
         numberofTimesVAStayed = 0
+        numberofTimesRandomPlayerPres = 0
 
         # plays the given amount of rounds
         for i in range(self.numRounds):
@@ -56,11 +59,11 @@ class Game(object):
             va = self.players[2]
 
             # starts the playing of rounds
-            newRound = presRound(self.players, self.startingPlayer, self.print)
+            newRound = presRound(self.players, self.startingPlayer)
             self.playersOutOrder = newRound.startRound()
-            for player in self.playersOutOrder:
-                print(player.name)
-            print("---------------------------")
+            # for player in self.playersOutOrder:
+            #     print(player.name)
+            # print("---------------------------")
 
             # heuristic stuff
             if ass == self.playersOutOrder[3]:
@@ -71,6 +74,8 @@ class Game(object):
                 numberofTimesVPStayed += 1
             if va == self.playersOutOrder[2]:
                 numberofTimesVAStayed += 1
+            if pres.name == self.numberOfPlayers:
+                numberofTimesRandomPlayerPres += 1
 
             self.players = self.playersOutOrder
             self.dealHands()
@@ -80,6 +85,7 @@ class Game(object):
         print(numberofTimesVPStayed/self.numRounds, " vp stayed")
         print(numberofTimesVAStayed/self.numRounds, " va stayed")
         print(numberofTimesAssStayed/self.numRounds, " ass stayed")
+        print(numberofTimesRandomPlayerPres/self.numRounds, " new player was pres")
 
     def doTopOneCardForFourPlayers(self):
         # gets cards
@@ -130,5 +136,5 @@ class Game(object):
 
 
 # script
-game1 = Game(4, 1, 50000, False)
+game1 = Game(4, 1, 5000)
 game1.startGame()

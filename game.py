@@ -8,7 +8,7 @@ import random
 
 
 class Game(object):
-    def __init__(self, numberOfPlayers, name, numRounds):
+    def __init__(self, numberOfPlayers, name, numRounds, twoOrOne):
         self.name = name
         self.deck = False
         self.players = []
@@ -22,6 +22,7 @@ class Game(object):
             self.players.append(Player(i))
         self.players.append(RandomPlayer(self.numberOfPlayers))
         self.dealHands()
+        self.twoOrOne = twoOrOne
 
     def dealHands(self):
         # makes and shuffles new deck
@@ -79,7 +80,10 @@ class Game(object):
 
             self.players = self.playersOutOrder
             self.dealHands()
-            self.doTopTwoCardsForFourPlayers()
+            if self.twoOrOne == 'two':
+                self.doTopTwoCardsForFourPlayers()
+            if self.twoOrOne == 'one':
+                self.doTopOneCardForFourPlayers()
 
         print(numberofTimesPresStayed/self.numRounds, " prez stayed")
         print(numberofTimesVPStayed/self.numRounds, " vp stayed")
@@ -136,5 +140,5 @@ class Game(object):
 
 
 # script
-game1 = Game(4, 1, 5000)
+game1 = Game(4, 1, 5000, 'two')
 game1.startGame()

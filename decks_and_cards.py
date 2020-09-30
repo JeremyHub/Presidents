@@ -27,8 +27,10 @@ class Card(object):
 
 
 class Deck(object):
-    def __init__(self):
+    def __init__(self, numDecks):
         self.cards = []
+        self.numDecks = numDecks
+
         self.build()
 
     # Display all cards in the deck
@@ -38,9 +40,10 @@ class Deck(object):
 
     # Generate 52 cards
     def build(self):
-        for suit in ['Hearts', 'Clubs', 'Diamonds', 'Spades']:
-            for val in range(2, 15):
-                self.cards.append(Card(suit, val))
+        for i in range(self.numDecks):
+            for suit in ['Hearts', 'Clubs', 'Diamonds', 'Spades']:
+                for val in range(2, 15):
+                    self.cards.append(Card(suit, val))
 
     # Shuffle the deck
     def shuffle(self):

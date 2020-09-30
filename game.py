@@ -1,32 +1,34 @@
-from players import *
+from player import *
 from decks_and_cards import *
 from presRound import *
 from badPlayer import *
 from randomPlayer import *
+from worstPlayer import *
 import math
 import random
 
 
 class Game(object):
-    def __init__(self, numberOfPlayers, name, numRounds, twoOrOne):
+    def __init__(self, numberOfPlayers, name, numRounds, twoOrOne, numDecks):
         self.name = name
         self.deck = False
         self.players = []
         self.numberOfPlayers = numberOfPlayers
-        self.dealHands()
         self.numRounds = numRounds
         self.playersOutOrder = []
         self.startingPlayer = False
-        # makes players
-        for i in range(self.numberOfPlayers - 1):
-            self.players.append(Player(i))
-        self.players.append(RandomPlayer(self.numberOfPlayers))
-        self.dealHands()
         self.twoOrOne = twoOrOne
+        self.numDecks = numDecks
+
+        # makes players
+        for i in range(self.numberOfPlayers):
+            self.players.append(Player(i))
+
+        self.dealHands()
 
     def dealHands(self):
         # makes and shuffles new deck
-        self.deck = Deck()
+        self.deck = Deck(self.numDecks)
         self.deck.shuffle()
         # gives players their hands
         for player in self.players:
@@ -48,7 +50,7 @@ class Game(object):
         numberofTimesPresStayed = 0
         numberofTimesVPStayed = 0
         numberofTimesVAStayed = 0
-        numberofTimesRandomPlayerPres = 0
+        # worstPlayerPres = 0
 
         # plays the given amount of rounds
         for i in range(self.numRounds):
@@ -67,43 +69,43 @@ class Game(object):
             # print("---------------------------")
 
             # heuristic stuff
-            if ass == self.playersOutOrder[3]:
+            if ass == self.playersOutOrder[self.numberOfPlayers - 1]:
                 numberofTimesAssStayed += 1
             if pres == self.playersOutOrder[0]:
                 numberofTimesPresStayed += 1
             if vp == self.playersOutOrder[1]:
                 numberofTimesVPStayed += 1
-            if va == self.playersOutOrder[2]:
+            if va == self.playersOutOrder[self.numberOfPlayers - 2]:
                 numberofTimesVAStayed += 1
-            if pres.name == self.numberOfPlayers:
-                numberofTimesRandomPlayerPres += 1
+            # if pres == self.playersOutOrder[3]:
+            #     worstPlayerPres += 1
 
             self.players = self.playersOutOrder
             self.dealHands()
             if self.twoOrOne == 'two':
-                self.doTopTwoCardsForFourPlayers()
-            if self.twoOrOne == 'one':
-                self.doTopOneCardForFourPlayers()
+                self.doTopTwoCards()
+            elif self.twoOrOne == 'one':
+                self.doTopOneCard()
 
         print(numberofTimesPresStayed/self.numRounds, " prez stayed")
         print(numberofTimesVPStayed/self.numRounds, " vp stayed")
         print(numberofTimesVAStayed/self.numRounds, " va stayed")
         print(numberofTimesAssStayed/self.numRounds, " ass stayed")
-        print(numberofTimesRandomPlayerPres/self.numRounds, " new player was pres")
+        # print(worstPlayerPres/self.numRounds, " worst player pres")
 
-    def doTopOneCardForFourPlayers(self):
-        # gets cards
+    def doTopOneCard(self):
+        # gets cards and gives cards
         self.startingPlayer = self.playersOutOrder[0]
-        bestOneA = self.playersOutOrder[3].giveHighestCard()
+        bestOneA = self.playersOutOrder[self.numberOfPlayers - 1].giveHighestCard()
         worstOneP = self.playersOutOrder[0].giveLowestCard()
-        worstOneVA = self.playersOutOrder[2].giveLowestCard()
+        worstOneVA = self.playersOutOrder[self.numberOfPlayers - 2].giveLowestCard()
         self.playersOutOrder[1].cardDict[worstOneVA] += 1
         worstOneVP = self.playersOutOrder[1].giveLowestCard()
         self.playersOutOrder[0].cardDict[bestOneA] += 1
-        self.playersOutOrder[2].cardDict[worstOneVP] += 1
-        self.playersOutOrder[3].cardDict[worstOneP] += 1
+        self.playersOutOrder[self.numberOfPlayers - 2].cardDict[worstOneVP] += 1
+        self.playersOutOrder[self.numberOfPlayers - 1].cardDict[worstOneP] += 1
 
-    def doTopTwoCardsForFourPlayers(self):
+    def doTopTwoCards(self):
         bestTwo = []
         worstTwo = []
         worstOne = []
@@ -117,9 +119,9 @@ class Game(object):
                 worstTwo.append(player.giveLowestCard())
             elif self.playersOutOrder.index(player) == 1:
                 worstOne.append(player.giveLowestCard())
-            elif self.playersOutOrder.index(player) == 2:
+            elif self.playersOutOrder.index(player) == self.numberOfPlayers - 2:
                 bestOne.append(player.giveHighestCard())
-            elif self.playersOutOrder.index(player) == 3:
+            elif self.playersOutOrder.index(player) == self.numberOfPlayers - 1:
                 bestTwo.append(player.giveHighestCard())
                 bestTwo.append(player.giveHighestCard())
 
@@ -131,14 +133,19 @@ class Game(object):
             elif self.playersOutOrder.index(player) == 1:
                 for card in bestOne:
                     player.cardDict[card] += 1
-            elif self.playersOutOrder.index(player) == 2:
+            elif self.playersOutOrder.index(player) == self.numberOfPlayers - 2:
                 for card in worstOne:
                     player.cardDict[card] += 1
-            elif self.playersOutOrder.index(player) == 3:
+            elif self.playersOutOrder.index(player) == self.numberOfPlayers - 1:
                 for card in worstTwo:
                     player.cardDict[card] += 1
 
 
 # script
-game1 = Game(4, 1, 5000, 'two')
+game1 = Game(4, 1, 50000, 'two', 1)
 game1.startGame()
+
+print("-----------------------")
+
+game2 = Game(4, 1, 50000, 'one', 1)
+game2.startGame()

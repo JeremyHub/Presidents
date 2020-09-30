@@ -1,7 +1,7 @@
 import math
 import random
 
-values = [2,3,4,5,6,7,8,9,10,11,12,13,14]
+values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 
 class Player(object):
     def __init__(self, name):

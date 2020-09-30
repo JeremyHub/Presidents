@@ -1,4 +1,4 @@
-from players import *
+from player import *
 import math
 import random
 

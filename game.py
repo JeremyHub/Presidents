@@ -12,7 +12,7 @@ import random
 
 
 class Game(object):
-    def __init__(self, numberOfPlayers, name, numRounds, passingRules, numDecks, newPlayer):
+    def __init__(self, numberOfPlayers, name, numRounds, passingRules, numDecks, newPlayer, restOfPlayers):
         self.name = name
         self.deck = False
         self.players = []
@@ -26,7 +26,7 @@ class Game(object):
 
         # makes players
         for i in range(self.numberOfPlayers - 1):
-            self.players.append(Player(i))
+            self.players.append(restOfPlayers(i))
         self.players.append(self.newPlayer)
 
         self.dealHands()

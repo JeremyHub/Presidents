@@ -64,15 +64,19 @@ class PlayerInputPlayer(object):
             return [card]
         else:
             card = int(card)
-        three = input("Did you use a three? (y/n)")
-        if three == 'y':
-            amountOfThree = int(input("How many threes did you use?"))
-            self.cardDict[3] -= amountOfThree
-            self.cardDict[card] -= (cardsOnTop[1] - amountOfThree)
-            return [card, cardsOnTop[1]]
-        if three == 'n':
-            self.cardDict[card] -= cardsOnTop[1]
-            return [card, cardsOnTop[1]]
+        if card == 2:
+            self.cardDict[2] -= 1
+            return [2, 1]
+        if self.cardDict[3] > 0:
+            three = input("Did you use a three? (y/n)")
+            if three == 'y':
+                amountOfThree = int(input("How many threes did you use?"))
+                self.cardDict[3] -= amountOfThree
+                self.cardDict[card] -= (cardsOnTop[1] - amountOfThree)
+                return [card, cardsOnTop[1]]
+        # if it hasn't returned by now they are just playing normally
+        self.cardDict[card] -= cardsOnTop[1]
+        return [card, cardsOnTop[1]]
 
     def start(self):
         print(self.cardDict)
@@ -81,16 +85,20 @@ class PlayerInputPlayer(object):
             return [card]
         else:
             card = int(card)
+        if card == 2:
+            self.cardDict[2] -= 1
+            return [2, 1]
         amount = int(input("How many of that card do you want to play? (including threes)"))
-        three = input("Did you use a three? (y/n)")
-        if three == 'y':
-            amountOfThree = int(input("How many threes did you use?"))
-            self.cardDict[3] -= amountOfThree
-            self.cardDict[card] -= (amount - amountOfThree)
-            return [card, amount]
-        if three == 'n':
-            self.cardDict[card] -= amount
-            return [card, amount]
+        if self.cardDict[3] > 0:
+            three = input("Did you use a three? (y/n)")
+            if three == 'y':
+                amountOfThree = int(input("How many threes did you use?"))
+                self.cardDict[3] -= amountOfThree
+                self.cardDict[card] -= (amount - amountOfThree)
+                return [card, amount]
+        # if it hasn't returned by now they are just playing normally
+        self.cardDict[card] -= amount
+        return [card, amount]
 
     def giveLowestCard(self):
         print(self.cardDict)

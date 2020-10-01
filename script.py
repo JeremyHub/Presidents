@@ -12,7 +12,7 @@ from personInputPlayer import *
 # script
 print("-----------------------")
 
-game1 = Game(4, 'game1', 10, 'two', 1, PlayerInputPlayer(3))
+game1 = Game(4, 'game1', 10, 'two', 1, PlayerInputPlayer(3), Player)
 game1.startGame()
 
 # print("-----------------------below is passing one")

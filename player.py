@@ -157,10 +157,12 @@ class Player(object):
                 return card
 
     def giveHighestCard(self):
-        for card in self.cardDict:
-            if self.cardDict[card] > 0 and card == 2 and card == 3:
-                self.cardDict[card] -= 1
-                return card
+        if self.cardDict[2] > 0:
+            self.cardDict[2] -= 1
+            return 2
+        if self.cardDict[3] > 0:
+            self.cardDict[3] -= 1
+            return 3
         # cant loop through dict reversed so i made a list of the cards at the top of this
         for card in reversed(values):
             if self.cardDict[card] > 0:

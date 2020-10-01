@@ -1,10 +1,10 @@
 import math
 import random
 
-values = [2,3,4,5,6,7,8,9,10,11,12,13,14]
+values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 
-class BadPlayer(object):
-    # this person is the same as the player except without the function that checks if it only has one type of trick and twos
+class TwoerPlayer(object):
+    # this player plays a two if the card it was going to play wasn't a match and the card they would open with is lower than the card they would play
     def __init__(self, name):
         self.name = name
         self.startingHand = []
@@ -66,6 +66,12 @@ class BadPlayer(object):
         if self.totalCards == 0:
             return ['out']
 
+        # checks if only twos and something else
+        if self.checkIfOnlyTwos():
+            self.cardDict[2] -= 1
+            return [2, 1]
+
+        cardsToPlay = []
         # loops through cardDict (goes forward so should play lowest first)
         for card in self.cardDict:
             # checks if its the same type of trick and if they have enough cards to play on the trick (at least one)
@@ -75,13 +81,26 @@ class BadPlayer(object):
                 if card >= cardsOnTop[0] and not card == 2 and not card == 3:
                     # checks to see if you have enough of the card to play without threes
                     if self.cardDict[card] - cardsOnTop[1] >= 0:
-                        self.cardDict[card] -= cardsOnTop[1]
-                        return [card, cardsOnTop[1]]
+                        cardsToPlay = [card, cardsOnTop[1]]
                     # if you don't have enough without threes, plays what you do have as well as threes, but not if its matching
                     elif card != cardsOnTop[0]:
-                        self.cardDict[3] -= cardsOnTop[1] - self.cardDict[card]
-                        self.cardDict[card] = 0
-                        return [card, cardsOnTop[1]]
+                        cardsToPlay = [card, cardsOnTop[1], (cardsOnTop[1] - self.cardDict[card])]
+
+        # checks if it was going to play something, if it wasn't a match, and if it has twos
+        if cardsToPlay != [] and cardsToPlay[0] > cardsOnTop[0] and self.cardDict[2] > 0:
+            for card in self.cardDict:
+                # checks the first card that isn't a two or three and if that card is lower than the card on top
+                if card != 2 and card != 3 and self.cardDict[card] > 0 and card < cardsOnTop[0]:
+                    # if yes, play a two
+                    self.cardDict[2] -= 1
+                    return [2, 1]
+        elif cardsToPlay != []:
+            if len(cardsToPlay) == 3:
+                self.cardDict[cardsToPlay[0]] = 0
+                self.cardDict[3] -= cardsToPlay[2]
+                return cardsToPlay[:2]
+            self.cardDict[cardsToPlay[0]] -= cardsToPlay[1]
+            return cardsToPlay
 
         # if it gets to here then it has nothing to play other than 2's and 3's
         # checks if it has enough 3's to play as aces
@@ -105,6 +124,11 @@ class BadPlayer(object):
         if self.totalCards == 0:
             return ['out']
 
+        # checks if only twos and something else
+        if self.checkIfOnlyTwos():
+            self.cardDict[2] -= 1
+            return [2, 1]
+
         # loops through card forward
         for card in self.cardDict:
             # checks the first card that isn't a two or three and plays all of it
@@ -125,6 +149,21 @@ class BadPlayer(object):
             return [14, amountOfCard]
 
         print(self.name + "ERROR start() didn't return?")
+
+    def checkIfOnlyTwos(self):
+        numberOfDiffCards = 0
+        # checks if have twos
+        if self.cardDict[2] == 0:
+            return False
+        # checks how many tricks you have
+        for card in self.cardDict:
+            if card != 2 and self.cardDict[card] > 0:
+                numberOfDiffCards += 1
+        # if you have just one trick (other than twos) returns true
+        if numberOfDiffCards == 1:
+            return True
+        else:
+            return False
 
     def giveLowestCard(self):
         for card in self.cardDict:

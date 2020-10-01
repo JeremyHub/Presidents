@@ -4,12 +4,14 @@ from presRound import *
 from badPlayer import *
 from randomPlayer import *
 from worstPlayer import *
+from noTwoPlayer import *
+from twoerPlayer import *
 import math
 import random
 
 
 class Game(object):
-    def __init__(self, numberOfPlayers, name, numRounds, twoOrOne, numDecks):
+    def __init__(self, numberOfPlayers, name, numRounds, passingRules, numDecks, newPlayer):
         self.name = name
         self.deck = False
         self.players = []
@@ -17,12 +19,14 @@ class Game(object):
         self.numRounds = numRounds
         self.playersOutOrder = []
         self.startingPlayer = False
-        self.twoOrOne = twoOrOne
+        self.passingRules = passingRules
         self.numDecks = numDecks
+        self.newPlayer = newPlayer
 
         # makes players
-        for i in range(self.numberOfPlayers):
+        for i in range(self.numberOfPlayers - 1):
             self.players.append(Player(i))
+        self.players.append(self.newPlayer)
 
         self.dealHands()
 
@@ -46,20 +50,20 @@ class Game(object):
                     break
 
         # heuristic stuff
-        numberofTimesAssStayed = 0
-        numberofTimesPresStayed = 0
-        numberofTimesVPStayed = 0
-        numberofTimesVAStayed = 0
-        # worstPlayerPres = 0
+        numberofTimesAssToPres = 0
+        numberofTimesPresToPres = 0
+        numberofTimesVPToPres = 0
+        numberofTimesVAToPres = 0
+        numberofTimesNewPlayerPres = 0
 
         # plays the given amount of rounds
         for i in range(self.numRounds):
 
             # heuristic stuff
-            ass = self.players[3]
+            ass = self.players[self.numberOfPlayers - 1]
             pres = self.players[0]
             vp = self.players[1]
-            va = self.players[2]
+            va = self.players[self.numberOfPlayers - 2]
 
             # starts the playing of rounds
             newRound = presRound(self.players, self.startingPlayer)
@@ -69,29 +73,59 @@ class Game(object):
             # print("---------------------------")
 
             # heuristic stuff
-            if ass == self.playersOutOrder[self.numberOfPlayers - 1]:
-                numberofTimesAssStayed += 1
+            if ass == self.playersOutOrder[0]:
+                numberofTimesAssToPres += 1
             if pres == self.playersOutOrder[0]:
-                numberofTimesPresStayed += 1
-            if vp == self.playersOutOrder[1]:
-                numberofTimesVPStayed += 1
-            if va == self.playersOutOrder[self.numberOfPlayers - 2]:
-                numberofTimesVAStayed += 1
-            # if pres == self.playersOutOrder[3]:
-            #     worstPlayerPres += 1
+                numberofTimesPresToPres += 1
+            if vp == self.playersOutOrder[0]:
+                numberofTimesVPToPres += 1
+            if va == self.playersOutOrder[0]:
+                numberofTimesVAToPres += 1
+            if pres == self.newPlayer:
+                numberofTimesNewPlayerPres += 1
 
             self.players = self.playersOutOrder
             self.dealHands()
-            if self.twoOrOne == 'two':
+            if self.passingRules == 'two':
                 self.doTopTwoCards()
-            elif self.twoOrOne == 'one':
+            elif self.passingRules == 'one':
                 self.doTopOneCard()
+            elif self.passingRules == 'hybrid':
+                self.doHybridPassing()
 
-        print(numberofTimesPresStayed/self.numRounds, " prez stayed")
-        print(numberofTimesVPStayed/self.numRounds, " vp stayed")
-        print(numberofTimesVAStayed/self.numRounds, " va stayed")
-        print(numberofTimesAssStayed/self.numRounds, " ass stayed")
-        # print(worstPlayerPres/self.numRounds, " worst player pres")
+        print(numberofTimesPresToPres/self.numRounds, " prez went to p")
+        print(numberofTimesVPToPres/self.numRounds, " vp went to p")
+        print(numberofTimesVAToPres/self.numRounds, " va went to p")
+        print(numberofTimesAssToPres/self.numRounds, " ass went to p")
+        # print(numberofTimesNewPlayerPres/self.numRounds, "% games other player was pres")
+
+    def doHybridPassing(self):
+        bestTwo = []
+        worstTwo = []
+        # gets cards
+        for player in self.players:
+            if self.playersOutOrder.index(player) == 0:
+                self.startingPlayer = player
+                worstTwo.append(player.giveLowestCard())
+                worstTwo.append(player.giveLowestCard())
+            elif self.playersOutOrder.index(player) == self.numberOfPlayers - 1:
+                bestTwo.append(player.giveHighestCard())
+                bestTwo.append(player.giveHighestCard())
+
+        # gives cards
+        for player in self.playersOutOrder:
+            if self.playersOutOrder.index(player) == 0:
+                for card in bestTwo:
+                    player.cardDict[card] += 1
+            elif self.playersOutOrder.index(player) == self.numberOfPlayers - 1:
+                for card in worstTwo:
+                    player.cardDict[card] += 1
+
+        # does va/vp passing
+        worstOneVA = self.playersOutOrder[self.numberOfPlayers - 2].giveLowestCard()
+        self.playersOutOrder[1].cardDict[worstOneVA] += 1
+        worstOneVP = self.playersOutOrder[1].giveLowestCard()
+        self.playersOutOrder[self.numberOfPlayers - 2].cardDict[worstOneVP] += 1
 
     def doTopOneCard(self):
         # gets cards and gives cards
@@ -142,10 +176,17 @@ class Game(object):
 
 
 # script
-game1 = Game(4, 1, 50000, 'two', 1)
+print("-----------------------below is passing two")
+
+game1 = Game(4, 'game1', 10000, 'two', 1, Player(3))
 game1.startGame()
 
-print("-----------------------")
+print("-----------------------below is passing one")
 
-game2 = Game(4, 1, 50000, 'one', 1)
-game2.startGame()
+game1 = Game(4, 'game2', 10000, 'one', 1, Player(3))
+game1.startGame()
+
+print("-----------------------below is passing two but vp/va doing the trade thing")
+
+game1 = Game(4, 'game2', 10000, 'hybrid', 1, Player(3))
+game1.startGame()

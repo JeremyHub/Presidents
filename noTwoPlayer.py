@@ -3,8 +3,8 @@ import random
 
 values = [2,3,4,5,6,7,8,9,10,11,12,13,14]
 
-class BadPlayer(object):
-    # this person is the same as the player except without the function that checks if it only has one type of trick and twos
+class NoTwoPlayer(object):
+    # this person does not play twos unless it is the last card in their hand
     def __init__(self, name):
         self.name = name
         self.startingHand = []
@@ -89,7 +89,12 @@ class BadPlayer(object):
             self.cardDict[3] -= cardsOnTop[1]
             return [14, cardsOnTop[1]]
         # checks if it has 2's to play and plays it
-        elif self.cardDict[2] > 0:
+        # this player checks if it has any other cards besides twos and if it does then it passes instead of playing a two
+        totalTypes = 0
+        for card in self.cardDict:
+            if self.cardDict[card] > 0:
+                totalTypes += 1
+        if self.cardDict[2] > 0 and totalTypes > 1:
             self.cardDict[2] -= 1
             return [2, 1]
         # if it has not returned by now then it needs to pass

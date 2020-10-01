@@ -1,4 +1,3 @@
-from player import *
 import math
 import random
 

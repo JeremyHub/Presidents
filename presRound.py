@@ -21,23 +21,23 @@ class presRound(object):
         self.currentPlayer = nextPlayer(self.players, self.currentPlayer)
         self.currentCards = self.currentPlayer.start()
         self.prevCards = []
-        # print(self.currentPlayer.name, "started with ", self.currentCards)
+        print(self.currentPlayer.name, "started with ", self.currentCards)
 
     def nextPlayerPlay(self):
         self.prevCards = self.currentCards
         self.currentPlayer = nextPlayer(self.players, self.currentPlayer)
         self.currentCards = self.currentPlayer.play(self.prevCards)
-        # print(self.currentPlayer.name, "played ", self.currentCards)
+        print(self.currentPlayer.name, "played ", self.currentCards)
 
     def currentPlayerStart(self):
         self.currentCards = self.currentPlayer.start()
         self.prevCards = []
-        # print(self.currentPlayer.name, "started with ", self.currentCards)
+        print(self.currentPlayer.name, "started with ", self.currentCards)
 
     def currentPlayerPlay(self):
         self.prevCards = self.currentCards
         self.currentCards = self.currentPlayer.play(self.prevCards)
-        # print(self.currentPlayer.name, "played ", self.currentCards)
+        print(self.currentPlayer.name, "played ", self.currentCards)
 
     def startRound(self):
         # sets up some variables
@@ -56,7 +56,7 @@ class presRound(object):
                 self.passCounter += 1
                 # if everyone has passed
                 if self.passCounter == len(self.players) - 1:
-                    # print("everyone passed")
+                    print("everyone passed")
                     self.nextPlayerStart()
                     continue
                 # if not everyone has passed

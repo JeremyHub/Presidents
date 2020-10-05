@@ -73,12 +73,16 @@ class NoTwoPlayer(object):
                 # checks if the card is playable and not a two or three
                 # (shouldn't be possible to be a two or three cuz it should be a four or higher)
                 if card >= cardsOnTop[0] and not card == 2 and not card == 3:
-                    # checks to see if you have enough of the card to play without threes
-                    if self.cardDict[card] - cardsOnTop[1] >= 0:
+                    # checks to see if you have enough of the card to play without threes (won't break up larger sets)
+                    if self.cardDict[card] - cardsOnTop[1] == 0:
+                        self.cardDict[card] -= cardsOnTop[1]
+                        return [card, cardsOnTop[1]]
+                    # this says it is ok to break up larger pairs if it is for matching
+                    elif self.cardDict[card] - cardsOnTop[1] > 0 and card == cardsOnTop[0]:
                         self.cardDict[card] -= cardsOnTop[1]
                         return [card, cardsOnTop[1]]
                     # if you don't have enough without threes, plays what you do have as well as threes, but not if its matching
-                    elif card != cardsOnTop[0]:
+                    elif card != cardsOnTop[0] and cardsOnTop[1] > 1 and self.cardDict[card] < cardsOnTop[1]:
                         self.cardDict[3] -= cardsOnTop[1] - self.cardDict[card]
                         self.cardDict[card] = 0
                         return [card, cardsOnTop[1]]

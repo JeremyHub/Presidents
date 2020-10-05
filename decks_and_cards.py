@@ -18,6 +18,7 @@ values = {
 }
 
 class Card(object):
+    # all cards in this game are objects which have suit and value
     def __init__(self, suit, val):
         self.suit = suit
         self.value = val
@@ -27,6 +28,7 @@ class Card(object):
 
 
 class Deck(object):
+    # deck object to keep track of a deck and to deal cards when asked
     def __init__(self, numDecks):
         self.cards = []
         self.numDecks = numDecks

@@ -1,7 +1,6 @@
 from player import *
 from decks_and_cards import *
 from presRound import *
-from badPlayer import *
 from randomPlayer import *
 from worstPlayer import *
 from noTwoPlayer import *
@@ -12,7 +11,9 @@ import random
 
 
 class Game(object):
-    def __init__(self, numberOfPlayers, name, numRounds, passingRules, numDecks, newPlayer, restOfPlayers):
+    # this object is the only thing that the player interacts with, it manages the playing of rounds and the creation of players,
+    # it also manages the exchanges of cards before the round starts and different heuristics I was curious about
+    def __init__(self, numberOfPlayers, name, numRounds, passingRules, numDecks, restOfPlayers, print=False, newPlayer=Player, amountOfNewPlayers=0):
         self.name = name
         self.deck = False
         self.players = []
@@ -22,12 +23,17 @@ class Game(object):
         self.startingPlayer = False
         self.passingRules = passingRules
         self.numDecks = numDecks
-        self.newPlayer = newPlayer
+        self.lastPlayer = newPlayer
+        self.amountOfNewPlayers = amountOfNewPlayers
+        self.print = print
 
         # makes players
-        for i in range(self.numberOfPlayers - 1):
+        for i in range(self.numberOfPlayers - self.amountOfNewPlayers):
             self.players.append(restOfPlayers(i))
-        self.players.append(self.newPlayer)
+        for i in range(self.amountOfNewPlayers):
+            self.players.append(self.lastPlayer(i + self.numberOfPlayers - self.amountOfNewPlayers))
+            self.lastPlayer = self.players[self.numberOfPlayers - 1]
+
 
         self.dealHands()
 
@@ -50,7 +56,7 @@ class Game(object):
                     # print('starting player:', self.startingPlayer.name)
                     break
 
-        # heuristic stuff
+        # heuristic variable setup
         numberofTimesAssToPres = 0
         numberofTimesPresToPres = 0
         numberofTimesVPToPres = 0
@@ -59,21 +65,25 @@ class Game(object):
 
         # plays the given amount of rounds
         for i in range(self.numRounds):
-
-            # heuristic stuff
+            # prints a progress bar
+            if not self.print: print(f'\r{"Percent Complete: "} {math.ceil((i/self.numRounds)*100)}% ', end='')
+            # heuristic role assignment
             ass = self.players[self.numberOfPlayers - 1]
             pres = self.players[0]
             vp = self.players[1]
             va = self.players[self.numberOfPlayers - 2]
 
-            # starts the playing of rounds
-            newRound = presRound(self.players, self.startingPlayer)
+            # starts the playing of rounds (this plays one round, the for loop above plays more rounds)
+            newRound = presRound(self.players, self.startingPlayer, self.print)
             self.playersOutOrder = newRound.startRound()
-            # for player in self.playersOutOrder:
-            #     print(player.name)
+            printablePlayersOutOrder = []
+            for player in self.playersOutOrder:
+                printablePlayersOutOrder.append(player.name)
+            # print("The below shows the players in order of when they went out.")
+            # print(printablePlayersOutOrder)
             # print("---------------------------")
 
-            # heuristic stuff
+            # heuristic role checking
             if ass == self.playersOutOrder[0]:
                 numberofTimesAssToPres += 1
             if pres == self.playersOutOrder[0]:
@@ -82,9 +92,16 @@ class Game(object):
                 numberofTimesVPToPres += 1
             if va == self.playersOutOrder[0]:
                 numberofTimesVAToPres += 1
-            if pres == self.newPlayer:
+            if pres == self.lastPlayer:
+                numberofTimesNewPlayerPres += -2
+            elif vp == self.lastPlayer:
+                numberofTimesNewPlayerPres += -1
+            elif va == self.lastPlayer:
                 numberofTimesNewPlayerPres += 1
+            elif ass == self.lastPlayer:
+                numberofTimesNewPlayerPres += 2
 
+            # checks what passing rules the game is operating under and implements that
             self.players = self.playersOutOrder
             self.dealHands()
             if self.passingRules == 'two':
@@ -94,13 +111,18 @@ class Game(object):
             elif self.passingRules == 'hybrid':
                 self.doHybridPassing()
 
-        print(numberofTimesPresToPres/self.numRounds, " prez went to p")
-        print(numberofTimesVPToPres/self.numRounds, " vp went to p")
-        print(numberofTimesVAToPres/self.numRounds, " va went to p")
-        print(numberofTimesAssToPres/self.numRounds, " ass went to p")
-        # print(numberofTimesNewPlayerPres/self.numRounds, "% games other player was pres")
+        # prints heuristic data
+        if not self.print: print("\n")
+        print(round((numberofTimesPresToPres/self.numRounds)*100,4), "% prez went to p")
+        print(round((numberofTimesVPToPres/self.numRounds)*100,4), "% vp went to p")
+        print(round((numberofTimesVAToPres/self.numRounds)*100,4), "% va went to p")
+        print(round((numberofTimesAssToPres/self.numRounds)*100,4), "% ass went to p")
+        if (self.amountOfNewPlayers > 0):
+            print(numberofTimesNewPlayerPres/self.numRounds, " average score (higher is worse, avg is 0) of the last player")
 
     def doHybridPassing(self):
+        # one of the passing rules, this is a hybrid of the two passing rules (functions) below this one
+        # this was setup to see how powerful pres would be if vp was in its weakest form and p was in its strongest
         bestTwo = []
         worstTwo = []
         # gets cards
@@ -129,7 +151,7 @@ class Game(object):
         self.playersOutOrder[self.numberOfPlayers - 2].cardDict[worstOneVP] += 1
 
     def doTopOneCard(self):
-        # gets cards and gives cards
+        # a passes best to p, p passes worst to a, va passes worst to vp, vp passes worst to va
         self.startingPlayer = self.playersOutOrder[0]
         bestOneA = self.playersOutOrder[self.numberOfPlayers - 1].giveHighestCard()
         worstOneP = self.playersOutOrder[0].giveLowestCard()
@@ -141,6 +163,7 @@ class Game(object):
         self.playersOutOrder[self.numberOfPlayers - 1].cardDict[worstOneP] += 1
 
     def doTopTwoCards(self):
+        # a passes best two to p, p worst two to a, va best one to vp, vp worst one to va
         bestTwo = []
         worstTwo = []
         worstOne = []

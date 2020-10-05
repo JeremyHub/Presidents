@@ -32,6 +32,13 @@ class RandomPlayer(object):
         self.cardDict = {2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0}
         self.totalCards = 0
 
+    def checkIfAnyNegatives(self):
+        # just a testing function to see if they have any cards that they have a negative amount of
+        for card in self.cardDict:
+            if self.cardDict[card] < 0:
+                print(self.name, "has negative cards")
+                print(self.cardDict)
+
     def sortHand(self):
         for card in self.startingHand:
             self.valHand.append(card.value)
@@ -74,32 +81,17 @@ class RandomPlayer(object):
         if self.totalCards == 0:
             return ['out']
 
-        # loops through cardDict (goes forward so should play lowest first)
+        # loops through randomized card dict and plays a card
         for card in self.cardDict:
-            # checks if its the same type of trick and if they have enough cards to play on the trick (at least one)
-            if self.cardDict[card] + self.cardDict[3] >= cardsOnTop[1] and self.cardDict[card] > 0:
-                # checks if the card is playable and not a two or three
-                # (shouldn't be possible to be a two or three cuz it should be a four or higher)
-                if card >= cardsOnTop[0] and not card == 2 and not card == 3:
-                    # checks to see if you have enough of the card to play without threes
-                    if self.cardDict[card] - cardsOnTop[1] >= 0:
-                        self.cardDict[card] -= cardsOnTop[1]
-                        return [card, cardsOnTop[1]]
-                    # if you don't have enough without threes, plays what you do have as well as threes, but not if its matching
-                    elif card != cardsOnTop[0]:
-                        self.cardDict[3] -= cardsOnTop[1] - self.cardDict[card]
-                        self.cardDict[card] = 0
-                        return [card, cardsOnTop[1]]
+            if card >= cardsOnTop[0]:
+                if self.cardDict[card] >= cardsOnTop[1]:
+                    self.cardDict[card] -= cardsOnTop[1]
+                    return [card, cardsOnTop[1]]
+                if self.cardDict[card] + self.cardDict[3] >= cardsOnTop[1] and card != cardsOnTop[0]:
+                    self.cardDict[3] -= cardsOnTop[1] - self.cardDict[card]
+                    self.cardDict[card] = 0
+                    return [card, cardsOnTop[1]]
 
-        # if it gets to here then it has nothing to play other than 2's and 3's
-        # checks if it has enough 3's to play as aces
-        if cardsOnTop[0] < 14 and self.cardDict[3] >= cardsOnTop[1]:
-            self.cardDict[3] -= cardsOnTop[1]
-            return [14, cardsOnTop[1]]
-        # checks if it has 2's to play and plays it
-        elif self.cardDict[2] > 0:
-            self.cardDict[2] -= 1
-            return [2, 1]
         # if it has not returned by now then it needs to pass
         else:
             return ['pass']

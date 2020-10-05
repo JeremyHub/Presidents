@@ -10,34 +10,40 @@ def nextPlayer(players, currentPlayer):
         return players[0]
 
 class presRound(object):
-    def __init__(self, players, startingPlayer):
+    # this is the round object, it manages players playing cards and what those cards do (matching, twos, ect.)
+    def __init__(self, players, startingPlayer, print):
         self.players = players
         self.currentPlayer = startingPlayer
         self.currentCards = []
         self.prevCards = []
         self.passCounter = 0
+        self.print = print
 
     def nextPlayerStart(self):
+        # asks the next player to start
         self.currentPlayer = nextPlayer(self.players, self.currentPlayer)
         self.currentCards = self.currentPlayer.start()
         self.prevCards = []
-        print(self.currentPlayer.name, "started with ", self.currentCards)
+        if self.print: print(self.currentPlayer.name, "started with ", self.currentCards)
 
     def nextPlayerPlay(self):
+        # asks the next player to play on the current cards
         self.prevCards = self.currentCards
         self.currentPlayer = nextPlayer(self.players, self.currentPlayer)
         self.currentCards = self.currentPlayer.play(self.prevCards)
-        print(self.currentPlayer.name, "played ", self.currentCards)
+        if self.print: print(self.currentPlayer.name, "played ", self.currentCards)
 
     def currentPlayerStart(self):
+        # asks the current player to start
         self.currentCards = self.currentPlayer.start()
         self.prevCards = []
-        print(self.currentPlayer.name, "started with ", self.currentCards)
+        if self.print: print(self.currentPlayer.name, "started with ", self.currentCards)
 
     def currentPlayerPlay(self):
+        # asks the current player to play on the current cards
         self.prevCards = self.currentCards
         self.currentCards = self.currentPlayer.play(self.prevCards)
-        print(self.currentPlayer.name, "played ", self.currentCards)
+        if self.print: print(self.currentPlayer.name, "played ", self.currentCards)
 
     def startRound(self):
         # sets up some variables
@@ -47,7 +53,14 @@ class presRound(object):
         self.currentPlayerStart()
 
         # this while loop only returns once everyone is out
-        while len(self.players) > 0:
+        while True:
+            # this makes a dict of players' hand sizes to then pass to the players in current cards
+            playersHandSizes = {}
+            for player in self.players:
+                playersHandSizes[player.name] = 0
+                for card in player.cardDict:
+                    playersHandSizes[player.name] += player.cardDict[card]
+            self.currentCards.append(playersHandSizes)
 
             # start of if statements to determine what card was just played
 
@@ -56,7 +69,7 @@ class presRound(object):
                 self.passCounter += 1
                 # if everyone has passed
                 if self.passCounter == len(self.players) - 1:
-                    print("everyone passed")
+                    if self.print: print("everyone passed")
                     self.nextPlayerStart()
                     continue
                 # if not everyone has passed
@@ -66,7 +79,7 @@ class presRound(object):
                     continue
 
             # if a match happened or a two was played
-            elif self.currentCards == self.prevCards or self.currentCards[0] == 2:
+            elif self.currentCards[:2] == self.prevCards[:2] or self.currentCards[0] == 2:
                 # print('match or two')
                 self.currentPlayerStart()
                 continue
@@ -77,7 +90,7 @@ class presRound(object):
                 # puts them on the list
                 playersOutOrder.append(self.currentPlayer)
                 playerToBeRemoved = self.currentPlayer
-                # switches to the next player
+                # switches to the next player (have to do this now bc the current player will be removed so nextPlayer() won't work
                 self.currentPlayer = nextPlayer(self.players, self.currentPlayer)
                 # removes them from players
                 self.players.remove(playerToBeRemoved)

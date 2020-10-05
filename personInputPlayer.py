@@ -4,9 +4,9 @@ import random
 values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 
 class PlayerInputPlayer(object):
-    # this person relies on player input
+    # this person relies on player input so that a person can play against the bots
     def __init__(self, name):
-        self.name = name
+        self.name = str(name)
         self.startingHand = []
         self.valHand = []
         self.cardDict = {
@@ -58,8 +58,9 @@ class PlayerInputPlayer(object):
         return self.startingHand
 
     def play(self, cardsOnTop):
-        print(self.cardDict)
-        card = input("What value card do you want to play? ('pass' or 'out')")
+        print("Others hand sizes: ", cardsOnTop[2])
+        print("Your hand: ", self.cardDict)
+        card = input("What value card do you (" + self.name + ") want to play? ('pass' or 'out')")
         if card == 'out' or card == 'pass':
             return [card]
         else:
@@ -80,7 +81,7 @@ class PlayerInputPlayer(object):
 
     def start(self):
         print(self.cardDict)
-        card = input("You are starting, what value card do you want to play? (or 'out)")
+        card = input("You (" + self.name + ") are starting, what value card do you want to play? (or 'out')")
         if card == 'out':
             return [card]
         else:
@@ -102,7 +103,7 @@ class PlayerInputPlayer(object):
 
     def giveLowestCard(self):
         print(self.cardDict)
-        card = int(input("You are giving any one card away. What card?"))
+        card = int(input("You (" + self.name + ") are giving any one card away. What card?"))
         self.cardDict[card] -= 1
         return card
 

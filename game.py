@@ -1,11 +1,6 @@
 from player import *
 from decks_and_cards import *
 from presRound import *
-from randomPlayer import *
-from worstPlayer import *
-from noTwoPlayer import *
-from twoerPlayer import *
-from personInputPlayer import *
 import math
 import random
 
@@ -14,6 +9,18 @@ class Game(object):
     # this object is the only thing that the player interacts with, it manages the playing of rounds and the creation of players,
     # it also manages the exchanges of cards before the round starts and different heuristics I was curious about
     def __init__(self, numberOfPlayers, name, numRounds, passingRules, numDecks, restOfPlayers, print=False, newPlayer=Player, amountOfNewPlayers=0):
+        '''
+        :param numberOfPlayers: the number of players in the game
+        :param name: the name of the game
+        :param numRounds: the number of rounds the game should go through
+        :param passingRules: the passing rules the game should operate under
+        :param numDecks: number of decks used
+        :param restOfPlayers: which of the player objects should comprise the game
+        :param print: True: prints out every single card every bot plays
+                      False: after all games are done, prints out statistics on the games
+        :param newPlayer: second type of player object (default is normal Player)
+        :param amountOfNewPlayers: number of players of the type above (default 0)
+        '''
         self.name = name
         self.deck = False
         self.players = []
@@ -33,7 +40,6 @@ class Game(object):
         for i in range(self.amountOfNewPlayers):
             self.players.append(self.lastPlayer(i + self.numberOfPlayers - self.amountOfNewPlayers))
             self.lastPlayer = self.players[self.numberOfPlayers - 1]
-
 
         self.dealHands()
 
@@ -79,9 +85,10 @@ class Game(object):
             printablePlayersOutOrder = []
             for player in self.playersOutOrder:
                 printablePlayersOutOrder.append(player.name)
-            # print("The below shows the players in order of when they went out.")
-            # print(printablePlayersOutOrder)
-            # print("---------------------------")
+            if self.print:
+                print("The below shows the players in order of when they went out.")
+                print(printablePlayersOutOrder)
+                print("---------------------------")
 
             # heuristic role checking
             if ass == self.playersOutOrder[0]:
@@ -93,13 +100,13 @@ class Game(object):
             if va == self.playersOutOrder[0]:
                 numberofTimesVAToPres += 1
             if pres == self.lastPlayer:
-                numberofTimesNewPlayerPres += -2
-            elif vp == self.lastPlayer:
-                numberofTimesNewPlayerPres += -1
-            elif va == self.lastPlayer:
-                numberofTimesNewPlayerPres += 1
-            elif ass == self.lastPlayer:
                 numberofTimesNewPlayerPres += 2
+            elif vp == self.lastPlayer:
+                numberofTimesNewPlayerPres += 1
+            elif va == self.lastPlayer:
+                numberofTimesNewPlayerPres += -1
+            elif ass == self.lastPlayer:
+                numberofTimesNewPlayerPres += -2
 
             # checks what passing rules the game is operating under and implements that
             self.players = self.playersOutOrder
@@ -110,15 +117,17 @@ class Game(object):
                 self.doTopOneCard()
             elif self.passingRules == 'hybrid':
                 self.doHybridPassing()
+            self.players = self.playersOutOrder
 
         # prints heuristic data
-        if not self.print: print("\n")
-        print(round((numberofTimesPresToPres/self.numRounds)*100,4), "% prez went to p")
-        print(round((numberofTimesVPToPres/self.numRounds)*100,4), "% vp went to p")
-        print(round((numberofTimesVAToPres/self.numRounds)*100,4), "% va went to p")
-        print(round((numberofTimesAssToPres/self.numRounds)*100,4), "% ass went to p")
-        if (self.amountOfNewPlayers > 0):
-            print(numberofTimesNewPlayerPres/self.numRounds, " average score (higher is worse, avg is 0) of the last player")
+        if not self.print:
+            print("\n")
+            print(round((numberofTimesPresToPres/self.numRounds)*100,4), "% prez went to p")
+            print(round((numberofTimesVPToPres/self.numRounds)*100,4), "% vp went to p")
+            print(round((numberofTimesVAToPres/self.numRounds)*100,4), "% va went to p")
+            print(round((numberofTimesAssToPres/self.numRounds)*100,4), "% ass went to p")
+            if (self.amountOfNewPlayers > 0):
+                print(numberofTimesNewPlayerPres/self.numRounds, " average score (higher is better, avg is 0) of the last player")
 
     def doHybridPassing(self):
         # one of the passing rules, this is a hybrid of the two passing rules (functions) below this one
@@ -126,7 +135,7 @@ class Game(object):
         bestTwo = []
         worstTwo = []
         # gets cards
-        for player in self.players:
+        for player in self.playersOutOrder:
             if self.playersOutOrder.index(player) == 0:
                 self.startingPlayer = player
                 worstTwo.append(player.giveLowestCard())
@@ -170,7 +179,7 @@ class Game(object):
         bestOne = []
 
         # gets cards
-        for player in self.players:
+        for player in self.playersOutOrder:
             if self.playersOutOrder.index(player) == 0:
                 self.startingPlayer = player
                 worstTwo.append(player.giveLowestCard())

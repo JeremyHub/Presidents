@@ -95,28 +95,32 @@ class Player(object):
                         self.cardDict[card] -= cardsOnTop[1]
                         return [card, cardsOnTop[1]]
                     # this says it is ok to break up larger pairs if it is for matching or if its a high card
-                    elif self.cardDict[card] - cardsOnTop[1] > 0 and (card == cardsOnTop[0] or card >= 9):
+                    elif self.cardDict[card] - cardsOnTop[1] > 0 and (card == cardsOnTop[0] or card >= 10):
                         # note -- the value 10 in the if statement above was determined by testing different values through many millions of games
                         self.cardDict[card] -= cardsOnTop[1]
                         return [card, cardsOnTop[1]]
                     # if you don't have enough without threes, plays what you do have as well as threes, but not if its matching
                     elif card != cardsOnTop[0] and cardsOnTop[1] > 1 and self.cardDict[card] < cardsOnTop[1]:
+                        threesUsed = cardsOnTop[1] - self.cardDict[card]
                         self.cardDict[3] -= cardsOnTop[1] - self.cardDict[card]
-                        self.cardDict[card] = 0
-                        return [card, cardsOnTop[1]]
+                        # should always set it to 0
+                        self.cardDict[card] -= cardsOnTop[1] - threesUsed
+                        self.checkIfAnyNegatives()
+                        return [card, cardsOnTop[1], "Threes used:", threesUsed]
 
         # if it gets to here then it has nothing to play other than 2's and 3's
-        # checks if it has enough 3's to play as aces
-        if cardsOnTop[0] < 14 and self.cardDict[3] >= cardsOnTop[1]:
-            self.cardDict[3] -= cardsOnTop[1]
-            return [14, cardsOnTop[1]]
+
         # checks if it has 2's to play
         if self.cardDict[2] > 0:
             self.cardDict[2] -= 1
             return [2, 1]
+        # checks if it has enough 3's to play as aces
+        if cardsOnTop[0] < 14 and self.cardDict[3] >= cardsOnTop[1]:
+            self.cardDict[3] -= cardsOnTop[1]
+            return [14, cardsOnTop[1], "Threes used:", cardsOnTop[1]]
+
         # if it has not returned by now then it needs to pass
-        else:
-            return ['pass']
+        return ['pass']
 
     def start(self):
 
@@ -137,9 +141,11 @@ class Player(object):
             for card in self.cardDict:
                 if card != 3 and self.cardDict[card] > 0:
                     amountOfCard = self.cardDict[card] + self.cardDict[3]
+                    threesUsed = self.cardDict[3]
                     self.cardDict[card] = 0
                     self.cardDict[3] = 0
-                    return [card, amountOfCard]
+                    if threesUsed > 0: return [card, amountOfCard, "Threes used:", threesUsed]
+                    else: return [card, amountOfCard]
 
         # loops through card forward
         for card in self.cardDict:
@@ -158,17 +164,13 @@ class Player(object):
         elif self.cardDict[3] > 0:
             amountOfCard = self.cardDict[3]
             self.cardDict[3] = 0
-            return [14, amountOfCard]
+            return [14, amountOfCard, "Threes used:", amountOfCard]
 
-        print(self.name + "ERROR start() didn't return?")
+        print(self.name + "Error: start() didn't return?")
 
     def checkIfGuaranteedOut(self):
         # check if the person can go out guaranteed by playing a two
-        numberOfTricks = 0
-        for card in self.cardDict:
-            if card != 2 and card != 3 and self.cardDict[card] > 0:
-                numberOfTricks += 1
-        if numberOfTricks == 1 and self.cardDict[2] > 0:
+        if self.onlyOneTrick() and self.cardDict[2] > 0:
             return True
         else:
             return False
@@ -185,19 +187,24 @@ class Player(object):
             return False
 
     def giveLowestCard(self):
+        # removes and returns the lowest card the players hand
         for card in self.cardDict:
             if card != 2 and card != 3 and self.cardDict[card] > 0:
                 self.cardDict[card] -= 1
                 return card
 
     def giveHighestCard(self):
+        # removes and returns the highest card in the players hand
+        # checks for twos
         if self.cardDict[2] > 0:
             self.cardDict[2] -= 1
             return 2
+        # checks for threes
         if self.cardDict[3] > 0:
             self.cardDict[3] -= 1
             return 3
-        # cant loop through dict reversed so i made a list of the cards at the top of this
+        # loops through dict to find next highest card
+        # cant loop through dict reversed so i made a list of the cards (keys for the dict) at the top of this file
         for card in reversed(values):
             if self.cardDict[card] > 0:
                 self.cardDict[card] -= 1

@@ -18,7 +18,7 @@ values = {
 }
 
 class Card(object):
-    # all cards in this game are objects which have suit and value
+    # all cards (kind of) in this game are objects which have suit and value
     def __init__(self, suit, val):
         self.suit = suit
         self.value = val

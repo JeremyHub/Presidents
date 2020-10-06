@@ -86,7 +86,6 @@ class presRound(object):
 
             # if the player is out
             elif self.currentCards[0] == 'out':
-                # print(self.currentPlayer.name, " went out -------------------------------")
                 # puts them on the list
                 playersOutOrder.append(self.currentPlayer)
                 playerToBeRemoved = self.currentPlayer
@@ -98,7 +97,7 @@ class presRound(object):
                 # checks if everyone is out (minus the last person)
                 if len(self.players) == 1:
                     playersOutOrder.append(self.currentPlayer)
-                    break
+                    return playersOutOrder
 
                 # checks if someone started with out
                 if self.prevCards == []:
@@ -106,10 +105,9 @@ class presRound(object):
                     self.currentPlayerStart()
                     continue
 
-                # if they didn't then next person plays (already swapped person)
-                # if everyone has passed (bc amount of people just changed)
+                # checks if everyone has passed (bc amount of people just changed so the normal check won't work)
                 elif self.passCounter == len(self.players) - 1:
-                    # print("everyone passed")
+                    if self.print: print("everyone passed")
                     self.currentPlayerStart()
                     continue
                 # if not everyone passed then next person plays
@@ -120,8 +118,5 @@ class presRound(object):
 
             # if it gets to here then they just played something not special
             else:
-                # print("nothing extraordinary happened")
                 self.passCounter = 0
                 self.nextPlayerPlay()
-
-        return playersOutOrder

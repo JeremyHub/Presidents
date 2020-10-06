@@ -7,7 +7,7 @@ from worstPlayer import *
 from noTwoPlayer import *
 from twoerPlayer import *
 from personInputPlayer import *
-from lessOldPlayer import *
+from oldPlayer import *
 
 # example scripts to play some games
 
@@ -39,6 +39,6 @@ from lessOldPlayer import *
 # game7 = Game(4, 'game7', 10000, 'two', 1, Player, False, NoTwoPlayer, 1)
 # game7.startGame()
 #
-print("-----------------------below is just testing things")
-game8 = Game(4, 'game8', 100000, 'two', 1, Player, False, LessOldPlayer, 1)
-game8.startGame()
+# print("-----------------------below is just for testing new player objects")
+# game8 = Game(4, 'game8', 50000, 'two', 1, Player, False, OldPlayer, 1)
+# game8.startGame()

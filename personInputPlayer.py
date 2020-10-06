@@ -103,7 +103,7 @@ class PlayerInputPlayer(object):
 
     def giveLowestCard(self):
         print(self.cardDict)
-        card = int(input("You (" + self.name + ") are giving any one card away. What card?"))
+        card = int(input("You (" + self.name + ") are giving any card away. What card?"))
         self.cardDict[card] -= 1
         return card
 

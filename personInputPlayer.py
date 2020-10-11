@@ -74,7 +74,7 @@ class PlayerInputPlayer(object):
                 amountOfThree = int(input("How many threes did you use?"))
                 self.cardDict[3] -= amountOfThree
                 self.cardDict[card] -= (cardsOnTop[1] - amountOfThree)
-                return [card, cardsOnTop[1]]
+                return [card, cardsOnTop[1], "Threes played:", amountOfThree]
         # if it hasn't returned by now they are just playing normally
         self.cardDict[card] -= cardsOnTop[1]
         return [card, cardsOnTop[1]]
@@ -96,7 +96,7 @@ class PlayerInputPlayer(object):
                 amountOfThree = int(input("How many threes did you use?"))
                 self.cardDict[3] -= amountOfThree
                 self.cardDict[card] -= (amount - amountOfThree)
-                return [card, amount]
+                return [card, amount, "Threes played:", amountOfThree]
         # if it hasn't returned by now they are just playing normally
         self.cardDict[card] -= amount
         return [card, amount]
@@ -110,12 +110,15 @@ class PlayerInputPlayer(object):
     def giveHighestCard(self):
         if self.cardDict[2] > 0:
             self.cardDict[2] -= 1
+            print("You (" + self.name + ") have given away a 2")
             return 2
         if self.cardDict[3] > 0:
             self.cardDict[3] -= 1
+            print("You (" + self.name + ") have given away a 3")
             return 3
         # cant loop through dict reversed so i made a list of the cards at the top of this
         for card in reversed(values):
             if self.cardDict[card] > 0:
                 self.cardDict[card] -= 1
+                print("You (" + self.name + ") have given away a " + str(card))
                 return card

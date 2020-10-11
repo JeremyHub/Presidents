@@ -42,3 +42,11 @@ from oldPlayer import *
 # print("-----------------------below is just for testing new player objects")
 # game8 = Game(4, 'game8', 50000, 'two', 1, Player, False, OldPlayer, 1)
 # game8.startGame()
+#
+# print("-----------------------below is one deck")
+# game9 = Game(4, 'game9', 20000, 'two', 1, Player, False)
+# game9.startGame()
+#
+# print("-----------------------below is two decks")
+# game10 = Game(4, 'game10', 10000, 'two', 2, Player, False)
+# game10.startGame()

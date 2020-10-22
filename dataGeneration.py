@@ -14,4 +14,4 @@ game13.startGame()
 data = pd.DataFrame(game13.getData(), columns=["role", "isStarting", 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 
 # data.to_csv('trainData.csv')
-data.to_csv('evalData.csv')
+# data.to_csv('evalData.csv')

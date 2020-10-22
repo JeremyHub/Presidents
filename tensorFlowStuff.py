@@ -61,8 +61,7 @@ for i in range(50):
     predictions = classifier.predict(input_fn=lambda: input_fn(predict))
     for pred_dict in predictions:
         print(pred_dict['probabilities'])
-        class_id = pred_dict['class_ids']
-        for id in range(len(class_id)):
-            probability = 100 * pred_dict['probabilities'][class_id[id]]
-            print('Prediction is "{}" ({:.1f}%)'.format(
-                ROLES[class_id[id]], probability))
+        class_id = pred_dict['class_ids'][0]
+        probability = 100 * pred_dict['probabilities'][class_id]
+        print('Prediction is "{}" ({:.1f}%)'.format(
+            ROLES[class_id], probability))

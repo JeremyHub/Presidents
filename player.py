@@ -89,7 +89,7 @@ class Player(object):
             if self.cardDict[card] + self.cardDict[3] >= cardsOnTop[1] and self.cardDict[card] > 0:
                 # checks if the card is playable and not a two or three
                 # (shouldn't be possible to be a two or three cuz it should be a four or higher)
-                if card >= cardsOnTop[0] and not card == 2 and not card == 3:
+                if card >= cardsOnTop[0] and card > 3:
                     # checks to see if you have enough of the card to play without threes (won't break up larger sets)
                     if self.cardDict[card] - cardsOnTop[1] == 0:
                         self.cardDict[card] -= cardsOnTop[1]
@@ -150,7 +150,7 @@ class Player(object):
         # loops through card forward
         for card in self.cardDict:
             # checks the first card that isn't a two or three and plays all of it
-            if card != 2 and card != 3 and self.cardDict[card] > 0:
+            if card > 3 and self.cardDict[card] > 0:
                 amountOfCard = self.cardDict[card]
                 self.cardDict[card] -= self.cardDict[card]
                 return [card, amountOfCard]
@@ -166,7 +166,7 @@ class Player(object):
             self.cardDict[3] = 0
             return [14, amountOfCard, "Threes used:", amountOfCard]
 
-        print(self.name + "Error: start() didn't return?")
+        print(self.name + ": Error: start() didn't return?")
 
     def checkIfGuaranteedOut(self):
         # check if the person can go out guaranteed by playing a two
@@ -179,7 +179,7 @@ class Player(object):
         # checks if the person has only one type of trick left
         numberOfTricks = 0
         for card in self.cardDict:
-            if card != 2 and card != 3 and self.cardDict[card] > 0:
+            if card > 3 and self.cardDict[card] > 0:
                 numberOfTricks += 1
         if numberOfTricks == 1:
             return True
@@ -187,9 +187,16 @@ class Player(object):
             return False
 
     def giveLowestCard(self):
-        # removes and returns the lowest card the players hand
+        # removes and returns the worst card the players hand
         for card in self.cardDict:
-            if card != 2 and card != 3 and self.cardDict[card] > 0:
+            # checks if the card is a single lower than a 9
+            if card > 3 and self.cardDict[card] == 1 and self.cardDict[card] < 9:
+                # note -- the number 9 in the if statement above was chosen because of millions of testing games
+                self.cardDict[card] -= 1
+                return card
+        # second loop in-case first didn't return (if they only have pairs lower than 9)
+        for card in self.cardDict:
+            if card > 3 and self.cardDict[card] > 0:
                 self.cardDict[card] -= 1
                 return card
 
@@ -209,3 +216,12 @@ class Player(object):
             if self.cardDict[card] > 0:
                 self.cardDict[card] -= 1
                 return card
+
+    def anti(self):
+        # returns a card to anti
+        cardsToAnti = []
+        for card in self.cardDict:
+            if card > 3 and self.cardDict[card] == 1 and card <= 8:
+                self.cardDict[card] -= 1
+                cardsToAnti.append(card)
+        return cardsToAnti

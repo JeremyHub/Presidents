@@ -11,9 +11,9 @@ from oldPlayer import *
 
 # example scripts to play some games
 
-# print("-----------------------below is normal bots just playing one game")
-# game1 = Game(4, 'game1', 1, 'two', 1, Player, True)
-# game1.startGame()
+print("-----------------------below is normal bots just playing one game")
+game1 = Game(4, 'game1', 1, 'two', 1, Player, True, Player, 0, True)
+game1.startGame()
 #
 # print("-----------------------below is passing two with a person playing against 3 bots")
 # game2 = Game(4, 'game2', 10, 'two', 1, Player, True, PlayerInputPlayer, 1)
@@ -40,7 +40,7 @@ from oldPlayer import *
 # game7.startGame()
 #
 # print("-----------------------below is just for testing new player objects")
-# game8 = Game(4, 'game8', 50000, 'two', 1, Player, False, OldPlayer, 1)
+# game8 = Game(4, 'game8', 5, 'two', 1, Player, True, OldPlayer, 1, True)
 # game8.startGame()
 #
 # print("-----------------------below is one deck")
@@ -50,3 +50,12 @@ from oldPlayer import *
 # print("-----------------------below is two decks")
 # game10 = Game(4, 'game10', 10000, 'two', 2, Player, False)
 # game10.startGame()
+#
+# testDict = {}
+# for i in range(4,14):
+#     game11 = Game(4, 'game8', 100000, 'none', 1, Player, False, OldPlayer, 1, True, [i, i - 1])
+#     game12 = Game(4, 'game8', 100000, 'none', 1, Player, False, OldPlayer, 1, True, [i, i + 1])
+#     testDict[i, i - 1] = game11.startGame()
+#     testDict[i, i + 1] = game12.startGame()
+#
+# print(testDict)

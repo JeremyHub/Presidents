@@ -4,11 +4,13 @@ import random
 values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 
 class OldPlayer(object):
-    # testing object
-    def __init__(self, name):
+    # this is the default player object that all other players are built off of (currently performs the best)
+    # this object handles playing cards, starting tricks as well as keeping track of its own hand
+    def __init__(self, name, test):
         self.name = name
         self.startingHand = []
         self.valHand = []
+        self.test = test
         # this dictionary is the thing that the player uses 99% of the time, it will be populated with how many of each card the player has
         self.cardDict = {
             2: 0,
@@ -88,7 +90,7 @@ class OldPlayer(object):
             if self.cardDict[card] + self.cardDict[3] >= cardsOnTop[1] and self.cardDict[card] > 0:
                 # checks if the card is playable and not a two or three
                 # (shouldn't be possible to be a two or three cuz it should be a four or higher)
-                if card >= cardsOnTop[0] and not card == 2 and not card == 3:
+                if card >= cardsOnTop[0] and card > 3:
                     # checks to see if you have enough of the card to play without threes (won't break up larger sets)
                     if self.cardDict[card] - cardsOnTop[1] == 0:
                         self.cardDict[card] -= cardsOnTop[1]
@@ -149,7 +151,7 @@ class OldPlayer(object):
         # loops through card forward
         for card in self.cardDict:
             # checks the first card that isn't a two or three and plays all of it
-            if card != 2 and card != 3 and self.cardDict[card] > 0:
+            if card > 3 and self.cardDict[card] > 0:
                 amountOfCard = self.cardDict[card]
                 self.cardDict[card] -= self.cardDict[card]
                 return [card, amountOfCard]
@@ -165,7 +167,7 @@ class OldPlayer(object):
             self.cardDict[3] = 0
             return [14, amountOfCard, "Threes used:", amountOfCard]
 
-        print(self.name + "Error: start() didn't return?")
+        print(self.name + ": Error: start() didn't return?")
 
     def checkIfGuaranteedOut(self):
         # check if the person can go out guaranteed by playing a two
@@ -178,7 +180,7 @@ class OldPlayer(object):
         # checks if the person has only one type of trick left
         numberOfTricks = 0
         for card in self.cardDict:
-            if card != 2 and card != 3 and self.cardDict[card] > 0:
+            if card > 3 and self.cardDict[card] > 0:
                 numberOfTricks += 1
         if numberOfTricks == 1:
             return True
@@ -186,9 +188,16 @@ class OldPlayer(object):
             return False
 
     def giveLowestCard(self):
-        # removes and returns the lowest card the players hand
+        # removes and returns the worst card the players hand
         for card in self.cardDict:
-            if card != 2 and card != 3 and self.cardDict[card] > 0:
+            # checks if the card is a single lower than a 9
+            if card > 3 and self.cardDict[card] == 1 and self.cardDict[card] < 9:
+                # note -- the number 9 in the if statement above was chosen because of millions of testing games
+                self.cardDict[card] -= 1
+                return card
+        # second loop in-case first didn't return (if they only have pairs lower than 9)
+        for card in self.cardDict:
+            if card > 3 and self.cardDict[card] > 0:
                 self.cardDict[card] -= 1
                 return card
 
@@ -208,3 +217,12 @@ class OldPlayer(object):
             if self.cardDict[card] > 0:
                 self.cardDict[card] -= 1
                 return card
+
+    def anti(self):
+        # returns a card to anti
+        cardsToAnti = []
+        for card in self.cardDict:
+            if card > 3 and self.cardDict[card] == 1 and card <= 8:
+                self.cardDict[card] -= 1
+                cardsToAnti.append(card)
+        return cardsToAnti

@@ -11,9 +11,9 @@ from oldPlayer import *
 
 # example scripts to play some games
 
-print("-----------------------below is normal bots just playing one game")
-game1 = Game(4, 'game1', 1, 'two', 1, Player, True, Player, 0, True)
-game1.startGame()
+# print("-----------------------below is normal bots just playing one game")
+# game1 = Game(4, 'game1', 1, 'two', 1, Player, True, Player, 0, True)
+# game1.startGame()
 #
 # print("-----------------------below is passing two with a person playing against 3 bots")
 # game2 = Game(4, 'game2', 10, 'two', 1, Player, True, PlayerInputPlayer, 1)

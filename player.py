@@ -68,7 +68,6 @@ class Player(object):
                 print(self.cardDict)
 
     def play(self, cardsOnTop):
-
         # print(self.name,"'s hand: ",self.cardDict)
 
         # checks if they are out

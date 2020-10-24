@@ -70,7 +70,8 @@ class Game(object):
             for card in player.showHand():
                 if card.value == 4 and card.suit == 'Clubs':
                     self.startingPlayer = player
-                    if self.print: print('starting player:', self.startingPlayer.name)
+                    if self.print:
+                        print('starting player:', self.startingPlayer.name)
                     break
 
         # heuristic variable setup
@@ -94,22 +95,23 @@ class Game(object):
             va = self.players[self.numberOfPlayers - 2]
 
             # generates some data about the player's hands for use later
-            cardsForPlayers = []
             if self.generateData:
-                # loops through players
-                for player in self.players:
-                    playerData = []
-                    # appends the player (this will be deleted later)
-                    playerData.append(player)
-                    # appends if they were the starting player
-                    if player is self.startingPlayer:
-                        playerData.append(1)
-                    else:
-                        playerData.append(0)
-                    # puts cards in the list
-                    for card in player.cardDict:
-                        playerData.append(player.cardDict[card])
-                    cardsForPlayers.append(playerData)
+                cardsForPlayers = []
+                if self.generateData:
+                    # loops through players
+                    for player in self.players:
+                        playerData = []
+                        # appends the player (this will be deleted later)
+                        playerData.append(player)
+                        # appends if they were the starting player
+                        if player is self.startingPlayer:
+                            playerData.append(1)
+                        else:
+                            playerData.append(0)
+                        # puts cards in the list
+                        for card in player.cardDict:
+                            playerData.append(player.cardDict[card])
+                        cardsForPlayers.append(playerData)
 
             # does the anti
             if self.anti:
@@ -147,13 +149,23 @@ class Game(object):
             # sets players to the new playersOutOrder
             self.players = self.playersOutOrder
 
-            # generates data for use
-            for playerDat in cardsForPlayers:
-                for player in self.players:
-                    if playerDat[0] is player:
-                        playerDat.pop(0)
-                        playerDat = [self.players.index(player)] + playerDat
-                        self.data.append(playerDat)
+            if self.generateData:
+                # generates data for use
+                data = []
+                for playerDat in cardsForPlayers:
+                    for player in self.players:
+                        if playerDat[0] is player:
+                            playerDat.pop(0)
+                            playerDat = [self.players.index(player)] + playerDat
+                            data.append(playerDat)
+                            # self.data.append(playerDat)
+
+                # puts player data into game data
+                toAppendToSelfData = []
+                for localData in data:
+                    for thing in localData:
+                        toAppendToSelfData.append(thing)
+                self.data.append(toAppendToSelfData)
 
             # deals hands
             self.dealHands()

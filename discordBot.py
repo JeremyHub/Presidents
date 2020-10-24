@@ -96,4 +96,4 @@ async def startBotGame(ctx):
     # sys.stdout = orig_stdout
     await ctx.send(output)
 
-client.run('NzY5MzM1Mjc2NjY0NzgyOTE4.X5NhTw.JDmc3an_0sSpaxoTayELuAXGNAo')
+client.run('token')

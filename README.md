@@ -8,7 +8,7 @@ Rules of the game (bear with me):
 	
   There is an alternate way of playing where the ass and pres only exchange one card (still asses best and pres’ any). However, in this rule set VA gives any one card to VP and then VP gives any one card back to VA. The theory behind this second rule set is to be more fair to the “lower class” by having them pass less of their good cards but still give the upper class an advantage.
 
-How the user interacts with the program:
+# How the user interacts with the program:
 
   In the files you will find a python file called “script.py”, in this are tons of different example games that you can try. The main way that the user interacts with this program is simply by trying different games and either seeing the bots play the game or seeing the statistics that are created after the game(s) are finished.
   
